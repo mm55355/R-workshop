@@ -82,7 +82,7 @@ library(caret)
 
 ## 3.3 Data splitting
 
-Now that we have more or less cleaned our data, lets split the data. For this, we should define our independent X and our dependent y variables. To achieve this, we can select which columns we want to assign to the variables either by appointing a **range** (classification_DF[, 1:2]) or the **name** (classification_DF\$name_of_column)of the columns. If we want to pick specific columns that cannot be picked from a range, we can use the **[, c(X1, X3, X5 y)]** way of concatenating columns. However, since we properly split up the data-frame, we should only need to use the first two columns as X and the last as y, which we can do the following way:
+Now that we have more or less cleaned our data, lets split the data. For this, we should define our independent X and our dependent y variables. To achieve this, we can select which columns we want to assign to the variables either by appointing a range **(classification_DF[, 1:2])** (keep in mind, the range is inclusive, so don't use the index) or the name **(classification_DF\$name_of_column)** of the columns. If we want to pick specific columns that cannot be picked from a range, we can use the **[, c(X1, X3, X5 y)]** way of concatenating columns. However, since we properly split up the data-frame, we should only need to use the first two columns as X and the last as y, which we can do the following way:
 
 ```{r}
 X <- classification_DF[, 1:2]
@@ -159,37 +159,53 @@ contingency_table <- table(predictions, y_test)
 confusionMatrix(contingency_table)
 ```
 
-## 3.6 Exercises
+## 3.6 Classification exercises
 
 Now that you have a rough idea on how you can perform basic classification, it is your turn! In the cell below you have a list of instructions which you have to follow to perform the exercise. Feel free to use more cells, you will probably need them.
+
+***Exercise 1.***
 
 ```{r}
 # Import the diabetes.csv file and display the first 5 rows
 ```
 
+***Exercise 2.***
+
 ```{r}
 # Check if the data-set contains any missing values and if so, remove them.
 ```
+
+***Exercise 3.***
 
 ```{r}
 # Put everything except the 'Outcome' as the X variable and 'Outcome' as the y variable. Tip: the first 8 columns are for the X and 9th is for the y. We are going to try to predict the 'Outcome' based on every other column in the CSV.
 ```
 
+***Exercise 4.***
+
 ```{r}
 # Split the data into train and test sets with a 70% train and 30% test ratio
 ```
+
+***Exercise 5.***
 
 ```{r}
 # Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned in 3.4)
 ```
 
+***Exercise 6.***
+
 ```{r}
 # Show the performance of the model using a confusion matrix
 ```
 
+***Exercise 7.***
+
 ```{r}
 # Create a a function which takes in the X, y and the name of the model as parameters. Make sure that the data is split into train and test inside the function. Lastly, make sure that the function returns the confusion matrix representing the performance of the model.
 ```
+
+***Exercise 8.***
 
 ```{r}
 # Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned in 3.4)
@@ -406,9 +422,9 @@ fviz_cluster(km.out_6, data = data_2cols,
              )
 ```
 
-## 4.3 Exercises
+## 4.3 Clustering exercises
 
-***Exercise 1a.***
+***Exercise 1.***
 
 Load the Soccer2019C.csv data and then create a scatter plot of "Finishing" and "HeadingAccuracy"
 
@@ -416,7 +432,7 @@ Load the Soccer2019C.csv data and then create a scatter plot of "Finishing" and 
 # your code here…
 ```
 
-***Exercise 1.2.***
+***Exercise 2.***
 
 How many clusters would you suspect there to be, just by visual inspection?
 
@@ -424,7 +440,7 @@ How many clusters would you suspect there to be, just by visual inspection?
 # your code here…
 ```
 
-***Exercise 1.3.***
+***Exercise 3.***
 
 Check if the elbow plots match your suspicion
 
@@ -433,7 +449,7 @@ Check if the elbow plots match your suspicion
 # Because dataset is too large n_cluster will take a lot of time, therefore limit the rows to 1000, not the optimal way but to give an overview over how it works
 ```
 
-***Exercise 1.4.***
+***Exercise 4.***
 
 Create a scatter plot with the number of clusters
 
