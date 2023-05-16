@@ -30,70 +30,70 @@ head(statistic_df)
 As you can see, we got our data loaded in, but there are quite a lot of columns. Luckily for us, we can just select the columns we want to work with, and we can even store that in a new variable! let's give this variable an easy to recognize name. After that, we can once again see the results by using the head function.
 
 ```{r}
-seldf <- select(statistic_df, c('life', 'mar1', 'sex'))
+sel_df <- statistic_df[, c("life", "mar1", 'sex')]
 head(statistic_df)
 ```
 
 As you can see, we now just have the three columns left. But even in these first few records we can already see some missing values. We can see which rows have empty values using the following line:
 
 ```{r}
-which(seldf == "" | is.na(seldf))
+which(sel_df == "" | is.na(sel_df))
 ```
 
 Those are quite a few missing values! We can remove these, but to ensure we also remove the records with an empty string, we first transform the empty values to NA, after which we can omit those records.
 
 ```{r}
-seldf[seldf == ""] <- NA
-seldf <- na.omit(seldf)
+sel_df[sel_df == ""] <- NA
+sel_df <- na.omit(sel_df)
 ```
 
 To see how many records have been removed, we can compare the amount of total records of our original dataframe with the cleaned dataframe by using the *nrow()* function*.*
 
 ```{r}
 df_count = nrow(statistic_df)
-seldf_count = nrow(seldf)
+sel_df_count = nrow(sel_df)
 
-print(paste0('The amount of rows in the df variable is ', df_count, ' and for the seldf variable it is ', seldf_count, '. This means we have removed ', (df_count - seldf_count), ' records' ))
+print(paste0('The amount of rows in the df variable is ', df_count, ' and for the sel_df variable it is ', sel_df_count, '. This means we have removed ', (df_count - sel_df_count), ' records' ))
 ```
 
 Now that we have removed any missing values, it's time to get to work with our cleaned dataset. Let's find out whether a certain lifestyle has any influence on the marital status of a person.\
 There is a handy function to create a table with the columns we want to show, so let's use that. We can select the columns from a specific dataframe with the \$ sign as show below:
 
 ```{r}
-table(seldf$sex, seldf$life)
+table(sel_df$sex, sel_df$life)
 ```
 
 We can use the prop.table() function to transform the numbers above in percentages. By default, the prop.table() function's output adds up to 1. This means that to get to a 100%, we simply multiply the values by 100.
 
 ```{r}
-prop.table(table(seldf$sex, seldf$life))*100
+prop.table(table(sel_df$sex, sel_df$life))*100
 ```
 
 It looks like most people reported having an exciting life. Lets find out if the marital status has any influence on this. And while we're at it, let's also split the data in male and female using the ftable() function.
 
 ```{r}
-prop.table(ftable(seldf))*100
+prop.table(ftable(sel_df))*100
 ```
 
 It seems like most people leading an exciting life are married, so let's narrow it down some more.\
 Let's see the percentages on how many married women think their life is exciting.
 
 ```{r}
-females_df <- seldf[seldf$mar1 == "MARRIED" & seldf$sex == 'FEMALE', ]
+females_df <- sel_df[sel_df$mar1 == "MARRIED" & sel_df$sex == 'FEMALE', ]
 prop.table(table(females_df$life))*100
 ```
 
 And let's do the same for men.
 
 ```{r}
-males <- seldf[seldf$mar1 == "MARRIED" & seldf$sex == 'MALE', ]
+males <- sel_df[sel_df$mar1 == "MARRIED" & sel_df$sex == 'MALE', ]
 prop.table(table(males$life))*100
 ```
 
 But we can also combine the data using the ftable() function, where we just filter the mar1 column where the value is MARRIED
 
 ```{r}
-combined_df <- seldf[seldf$mar1 == "MARRIED", ]
+combined_df <- sel_df[sel_df$mar1 == "MARRIED", ]
 ftable(combined_df)
 ```
 
@@ -979,7 +979,7 @@ This section contains the answers to all of the exercises which were given durin
 *create a variable based on statistic_df and show the first rows*
 
 ```{r}
-mydf <- select(statistic_df, c('sex', 'age', 'mar1'))
+sel_df <- statistic_df[, c("sex", "age", 'mar1')]
 head(mydf)
 ```
 
@@ -998,7 +998,7 @@ mydf <- na.omit(mydf)
 df_count = nrow(statistic_df)
 mydf_count = nrow(mydf)
 
-print(paste0('The amount of rows in the df variable is ', df_count, ' and for the seldf variable it is ', mydf_count, '. This means we have removed ', (df_count - mydf_count), ' records' ))
+print(paste0('The amount of rows in the df variable is ', df_count, ' and for the sel_df variable it is ', mydf_count, '. This means we have removed ', (df_count - mydf_count), ' records' ))
 ```
 
 *show the data in a table.*
