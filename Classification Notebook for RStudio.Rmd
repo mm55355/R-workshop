@@ -1,0 +1,534 @@
+---
+title: "Datamining using RStudio Notebook"
+output: 
+  html_notebook: 
+    highlight: espresso
+---
+
+# Data mining & Statistics in R
+
+This notebook is made for students to be able to get more familiar with R, especially when it comes to the common data mining techniques that were previously performed using Python. The exercises within this notebook are in order of the presentation, so feel free to skip to any particular exercise which you want to test out.
+
+## Classification
+
+In this part we will cover how you can perform basic classification in R. For this demonstration, we are going to use the UFC2019.csv file as our data-set. And diabetes.csv data-set for the individual exercise where you can put your knowledge to the test.
+
+### Data visualization
+
+For data visualization, R provides similar features which were discussed during the DMS course with Python. Those features are plots, bar chart, pie charts, etc. The most basic way to visualize our data, however, is by looking at the first couple of rows and the available columns in the designated data-set. Let's start off by reading out the UFC2019.csv file and displaying the first five rows.
+
+To achieve the following result, we can use the **read.csv()** function and assign it to a variable which will construct a data frame based on the given file, which in our case is a CSV. The parameters of the function are self-explanatory (path of the file, whether to include the header and the separation sign of the data-set file). To display the first few rows of the data-frame, we can use the **head()** method for which we can pass our data-frame and the number of rows we want to be displayed.
+
+```{r}
+selection_DF <- read.csv("UFC2019.csv", header=TRUE, sep=",")
+head(selection_DF, 5)
+```
+
+This data-set consists of 145 unique columns and 5144 unique rows. In order to perform classification on this data-set we should choose at least two independent **X** variables to predict the dependent **y** variable.
+
+To keep it simple, lets choose the **age** of Red and Blue fighters in order to predict the **winner** of the match. To achieve this, lets first take all of the variables that we want to use (both X and y) into a separate data-frame to make it easier for us.
+
+To assign these three columns to a new data-frame, we can use the **[, c(X1, X2, y)]** extension which simply concatenates the columns along with their values to the new data-frame.
+
+```{r}
+classification_DF = selection_DF[, c('R_age', 'B_age', 'Winner')]
+head(classification_DF, 5)
+```
+
+### Data cleaning
+
+In order to provide the most accurate results and to avoid any complication with the classifiers, we should clean our data as much as possible. The first thing we can do is check whether our data contains any missing values, such as NaN.
+
+We can use the **any** method in combination with the boolean expression method **is.na()** to simply determine whether our data-set contains missing values. Another alternative is to use the **sum()** in combination with **is.na()** to determine how many missing values we have
+
+```{r}
+any(is.na(classification_DF))
+sum(is.na(classification_DF))
+```
+
+Now that we know that our data-set contains some missing values, let's make sure to get rid of these values to avoid any possible complication with our classifiers. To do this, we can use the **na.omit()** , pass our data-set and assign this to our original data frame variable.
+
+```{r}
+classification_DF <- na.omit(classification_DF)
+any(is.na(classification_DF))
+```
+
+We previously mentioned that we would like to determine whether Red or Blue has won based on the ages of the contestants. In order to make our prediction a bit more accurate and simple, lets remove the possibility of there being a "Draw". In other words, we are only interested in knowing who won or lost. Lets see how many draws we encounter first..
+
+```{r}
+sum(classification_DF$Winner == 'Draw')
+```
+
+Alright. Lets now remove all the instances of draw to make it more easier on ourselves.
+
+```{r}
+classification_DF <- subset(classification_DF, Winner != 'Draw')
+sum(classification_DF$Winner == 'Draw')
+```
+
+We can not install and import the package that we will need for data partitioning and classification model(s). This package is known as **'caret'**. The caret package offers a unified framework for a wide range of machine learning tasks, including classification, regression, and feature selection. It provides a consistent API for multiple algorithms and facilitates data preprocessing, model tuning, and performance evaluation.
+
+Firstly, lets install the required package.
+
+```{r}
+install.packages("caret")
+```
+
+Now lets import our packages.
+
+```{r}
+library(caret)
+```
+
+### Data splitting
+
+Now that we have more or less cleaned our data, lets split the data. For this, we should define our independent X and our dependent y variables. To achieve this, we can select which columns we want to assign to the variables either by appointing a **range** (classification_DF[, 1:2]) or the **name** (classification_DF\$name_of_column)of the columns. If we want to pick specific columns that cannot be picked from a range, we can use the **[, c(X1, X3, X5 y)]** way of concatenating columns. However, since we properly split up the data-frame, we should only need to use the first two columns as X and the last as y, which we can do the following way:
+
+```{r}
+X <- classification_DF[, 1:2]
+y <- classification_DF$Winner
+```
+
+Now, let's split our data into train and test sets. To do this, we can use the Hold-Out method which was frequently used in the Data mining and Statistics course. There are several ways of doing it, however, one of the most easiest one to use is the **createDataPartition()** function from the **'caret'** library.
+
+The first parameters indicates the output variable that we are trying to predict. The second parameter indicates what our train and testing split is, in our case, it's 80% train and 20% split. The last parameter indicates that we want to get a vector of indices back, rather than a list of our partitioned data since its easier to work with vectors. This approach will ensure that the data is randomly divided into training and testing sets, allowing us to train our model on one set and evaluate its performance on the other.
+
+```{r}
+train_index <- createDataPartition(y, p = 0.8, list = FALSE)
+X_train <- X[train_index, ]
+y_train <- y[train_index]
+X_test <- X[-train_index, ]
+y_test <- y[-train_index]
+```
+
+### Classification model
+
+There are various libraries that contains various classification models that we can use on our data-set. For simplicity, we are going to use methods and classifier algorithms provided within the **'caret'** library.
+
+**Caret** provides us with many different classification algorithms, some of which are:
+
+1.  Naive Bayes ('naive_bayes')
+
+2.  K-Nearest Neighbors ('knn')
+
+3.  Support Vector Machines ('svmLinear', 'svmRadial')
+
+4.  Random Forest ('rf')
+
+5.  Logistic Regression ('glm')
+
+6.  Quadratic Discriminant Analysis ('qda')
+
+7.  Linear Discriminant Analysis ('lda')
+
+8.  Adaptive Boosting ('adaboost')
+
+Lets try to build our model based on the KNN classifier
+
+```{r}
+model <- train(x = X_train, y = y_train, method = "knn")
+```
+
+```{r}
+predictions <- predict(model, newdata = X_test)
+```
+
+### Performance assessment
+
+There are several ways to assess the quality of a classification model. The most common is displaying the accuracy of a set of predictions by comparing them with the corresponding true labels **(actual vs predicted) -\> (y_test vs predictions)**
+
+Calculate the accuracy
+
+```{r}
+accuracy <- mean(predictions == y_test)
+```
+
+Display of the accuracy
+
+```{r}
+result <- paste("The accuracy of this model is:", accuracy)
+print(result)
+```
+
+Another famous method of assessing the quality of a classification model is by construction a confusion matrix which will provide a comprehensive summary of the model's performance by breaking down the predicted and actual class labels into different categories. This way, we can asses the model's accuracy, precision, recall and any other evaluation metrics.
+
+Everything in the top left and bottom right is what the model guessed correctly. The other two corners are the ones that the model was not able to predict correctly. Top left indicates that model predicted Blue right 25 times, while bottom right indicates that the model predicted Red correctly 603 times. Bottom left indicates that 292 times the model predicted Blue to be Red and top right indicates that the model predicted 53 times that Red is Blue.
+
+```{r}
+contingency_table <- table(predictions, y_test)
+confusionMatrix(contingency_table)
+```
+
+### Exercise
+
+Now that you have a rough idea on how you can perform basic classification, it is your turn! In the cell below you have a list of instructions which you have to follow to perform the exercise. Feel free to use more cells, you will probably need them.
+
+```{r}
+# Import the diabetes.csv file and display the first 5 rows
+
+# Check if the data-set contains any missing values and if so, remove them.
+
+# Put everything except the 'Outcome' as the X variable and 'Outcome' as the y variable. Tip: the first 8 columns are for the X and 9th is for the y. We are going to try to predict the 'Outcome' based on every other column in the CSV.
+
+# Split the data into train and test sets with a 70% train and 30% test ratio
+
+# Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned earlier)
+
+# Show the performance of the model using a confusion matrix
+
+# Create a a function which takes in the X, y and the name of the model as parameters. Make sure that the data is split into train and test inside the function. Lastly, make sure that the function returns the confusion matrix representing the performance of the model.
+
+# Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned earlier)
+```
+
+### Answers to the classification exercise
+
+```{r}
+# Import the Soccer2019C.csv file and display the first 5 rows
+diabetes_DF <- read.csv("diabetes.csv", header=TRUE, sep=",")
+head(diabetes_DF, 5)
+```
+
+```{r}
+# Check if the data-set contains any missing values and if so, remove them.
+any(is.na(diabetes_DF))
+```
+
+```{r}
+# Put everything except the 'Outcome' as the X variable and 'Outcome' as the y variable. Tip: the first 8 columns are for the X and 9th is for the y. We are going to try to predict the 'Outcome' based on every other column in the CSV.
+
+X <- diabetes_DF[, 1:8]
+y <- diabetes_DF$Outcome
+```
+
+```{r}
+# Split the data into train and test sets with a 70% train and 30% test ratio
+train_index <- createDataPartition(y, p = 0.7, list = FALSE)
+X_train <- X[train_index, ]
+y_train <- y[train_index]
+X_test <- X[-train_index, ]
+y_test <- y[-train_index]
+```
+
+```{r}
+# Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned earlier)
+model <- train(x = X_train, y = y_train, method = "naive_bayes")
+predictions <- predict(model, newdata = X_test)
+```
+
+```{r}
+# Show the performance of the model using a confusion matrix
+contingency_table <- table(predictions, y_test)
+confusionMatrix(contingency_table)
+```
+
+```{r}
+# Createa a function which takes in the X, y and the name of the model as parameters. Make sure that the data is split into train and test inside the function. Lastly, make sure that the function returns the confusion matrix representing the performance of the model.
+perform_classification <- function(X, y, model_name) {
+  train_index <- createDataPartition(y, p = 0.8, list = FALSE)
+  X_train <- X[train_index, ]
+  y_train <- y[train_index]
+  X_test <- X[-train_index, ]
+  y_test <- y[-train_index]
+  
+  model <- train(x = X_train, y = y_train, method = model_name)
+  predictions <- predict(model, newdata = X_test)
+  contingency_table <- table(predictions, y_test)
+  
+  
+  print(paste("The result of the ", model_name, "model is as followed:"))
+  cat("\n")
+  
+  confusionMatrix(contingency_table)
+}
+```
+
+```{r}
+# Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned earlier)
+perform_classification(X, y, "qda")
+```
+
+# **What is clustering analysis?**
+
+Cluster analysis is a way to group similar things together based on their characteristics, while keeping the different groups as different as possible from each other. The goal is to find patterns in data by grouping similar observations together.
+
+The two main ways to group data into classes are:
+
+1.  K-means clustering: This is used when you know how many groups you want to create beforehand. It's like putting things in labeled boxes based on their similarity.
+
+2.  Hierarchical clustering: This is used when you don't know how many groups you want to create, and the algorithm helps you determine the best number. It's like starting with a big pile of items and grouping them into smaller and smaller clusters based on their similarities.
+
+K-means is considered supervised because you guide it by telling it how many groups to create. Hierarchical clustering is considered unsupervised because the algorithm determines the number of clusters. There are also many other clustering methods available, in case you want to explore them, they can be found here: <https://easystats.github.io/parameters/articles/clustering.html>
+
+# ***k*****-means clustering**
+
+K-means clustering, also known as the mobile center algorithm, is a method used for classifying data into k clusters based on the closest average. The goal is to assign each observation to the cluster with the closest prototype. We won't delve into the mathematical specifics, but rather focus on how to implement this technique in R.
+
+First we will need to install some packages and then import them:
+
+```{r}
+install.packages("factoextra")
+install.packages("NbClust")
+install.packages("ggplot2")
+install.packages("parameters")
+install.packages("mclust")
+```
+
+```{r}
+library(ggplot2)
+library(factoextra)
+library(NbClust)
+library(parameters)
+library(mclust)
+```
+
+Then, let's load out dataset
+
+```{r}
+# load dataset
+dataset <- read.csv("Mall_Customers.csv") 
+
+# show first 5 records
+head(dataset,5)
+```
+
+The following na.omit is used to remov any rows or columns containing missing values from the dataset. This can be useful for cleaning data before analysis, as many statistical and machine learning algorithms cannot handle missing values and may produce errors or incorrect results if they are present in the data.
+
+```{r}
+# remove null values
+dataset <- na.omit(dataset)
+```
+
+The following command counts the number of missing values in the dataset, if 0 this means we can continue and our dataset is suitable to do the analysis.
+
+```{r}
+sum(is.na(dataset))
+```
+
+**`dim()`** is a function in R that returns the dimensions of a matrix or data frame, which is similar to df.shape() in python.
+
+```{r}
+dim(dataset) 
+```
+
+Now we want to cluster our customers based on their income and spendingScore:
+
+```{r}
+
+# Get the two columns of interest
+data_2cols <- dataset[, c("Income", "spendingScore")]
+head(data_2cols)
+```
+
+Visualize our dataset:
+
+```{r}
+ggplot(dataset, aes(Income, spendingScore, color = "red")) +
+    geom_point(alpha = 0.25) +
+    xlab("Income") +
+    ylab("Spending Score")
+```
+
+K-means clustering is known for its limitation in producing consistent results, as the algorithm randomly selects the initial centers which can result in different classifications even with the same command. To address this issue, the nstart argument in the kmeans() function can be used. By running the algorithm with multiple initialization, the function selects the most optimal one and provides a more stable classification. Looking at the above plot perhaps k=5 is the best value for number of cluster, therefore we will use it like the following:
+
+```{r}
+# perform kmeans using k =5
+km.out <- kmeans(data_2cols, centers = 5, nstart = 20)
+km.out
+```
+
+Visualize the results:
+
+```{r}
+dataset$cluster_id <- factor(km.out$cluster)
+ggplot(dataset, aes(Income, spendingScore, color = cluster_id)) +
+    geom_point(alpha = 0.25) +
+    xlab("Income") +
+    ylab("Spending Score")
+```
+
+```{r}
+fviz_cluster(km.out, data = data_2cols, 
+  ellipse.type = "convex",
+  palette = "jco",
+  repel = TRUE)
+```
+
+```{r}
+fviz_cluster(km.out, data = data_2cols,
+             palette = "jco", 
+             ellipse.type = "euclid", # Concentration ellipse
+             star.plot = TRUE, # Add segments from centroids to items
+             repel = TRUE, # Avoid label overplotting (slow)
+             ggtheme = theme_minimal()
+             )
+```
+
+Seems reasonable, now lets make sure that 5 is the optimal number of clusters. In order to find the optimal number of clusters for a k-means, it is recommended to choose it based on:
+
+-   Elbow method (which uses the within cluster sums of squares)
+
+-   Average silhouette method
+
+-   Gap statistic method
+
+-   Consensus-based algorithm
+
+now lets start by using the elbow method, the Elbow method looks at the total within-cluster sum of square (WSS) as a function of the number of clusters.
+
+```{r}
+# Elbow method
+fviz_nbclust(data_2cols,kmeans, method = "wss") +
+  geom_vline(xintercept = 4, linetype = 2) + # add line for better visualisation
+  labs(subtitle = "Elbow method") # add subtitle
+```
+
+The location of a knee in the plot is usually considered as an indicator of the appropriate number of clusters because it means that adding another cluster does not improve much better the partition. This method seems to suggest 4 clusters.
+
+The Elbow method is sometimes ambiguous and an alternative is the average silhouette method. The Silhouette method measures the quality of a clustering and determines how well each point lies within its cluster.
+
+```{r}
+fviz_nbclust(data_2cols, kmeans, method = "silhouette") +
+  labs(subtitle = "Silhouette method")
+```
+
+The Silhouette method suggests 6 clusters. Let's do the last method which is gap_stat:
+
+```{r}
+fviz_nbclust(data_2cols, kmeans,
+  nstart = 25,
+  method = "gap_stat",
+  nboot = 500 # reduce it for lower computation time (but less precise results)
+) +
+  labs(subtitle = "Gap statistic method")
+```
+
+The optimal number of clusters is the one that maximizes the gap statistic. This method suggests only 1 cluster (which is therefore a useless clustering in this case).
+
+As we can see these three methods do not necessarily lead to the same result. Here, the 3 approaches suggest a different number of clusters.
+
+Because no method is clearly better, a fourth alternative is to run many methods and take the number of clusters that is the most agreed upon (i.e., find the consensus).
+
+This can easily be done with the `n_clusters()` function from the `{parameters}` package, this function runs many existing procedures for determining how many clusters are present in your data. It returns the number of clusters based on the maximum consensus. In case of ties, it will select the solution with the less clusters:
+
+```{r}
+n_clust <- n_clusters(data_2cols,
+  package = c("easystats", "NbClust", "mclust"),
+  standardize = FALSE
+)
+n_clust
+```
+
+The optimal number of clusters to retain can also be visualized:
+
+```{r}
+plot(n_clust)
+```
+
+Based on all indices, most methods suggest to retain 6 clusters, therefore let's do kmeans using k=6.
+
+```{r}
+km.out_6 <- kmeans(data_2cols, centers = 6, nstart = 20)
+km.out_6
+```
+
+```{r}
+dataset$cluster_id <- factor(km.out_6$cluster)
+ggplot(dataset, aes(Income, spendingScore, color = cluster_id)) +
+    geom_point(alpha = 0.25) +
+    xlab("Income") +
+    ylab("Spending Score")
+```
+
+```{r}
+fviz_cluster(km.out_6, data = data_2cols, 
+  ellipse.type = "convex",
+  palette = "jco",
+  repel = TRUE)
+```
+
+```{r}
+fviz_cluster(km.out_6, data = data_2cols,
+             palette = "jco", 
+             ellipse.type = "euclid", # Concentration ellipse
+             star.plot = TRUE, # Add segments from centroids to items
+             repel = TRUE, # Avoid label overplotting (slow)
+             ggtheme = theme_minimal()
+             )
+```
+
+***Exercise 1a.***
+
+Load the Soccer2019C.csv data and then create a scatter plot of "Finishing" and "HeadingAccuracy"
+
+```{r}
+# your code here…
+```
+
+***Exercise 1.2.***
+
+How many clusters would you suspect there to be, just by visual inspection?
+
+```{r}
+# your code here…
+```
+
+***Exercise 1.3.***
+
+Check if the elbow plots match your suspicion
+
+```{r}
+# your code here…
+# Because dataset is too large n_cluster will take a lot of time, therefore limit the rows to 1000, not the optimal way but to give an overview over how it works
+```
+
+***Exercise 1.4.***
+
+Create a scatter plot with the number of clusters
+
+```{r}
+# your code here…
+```
+
+***solution***
+
+```{r}
+dataset_soccer <- read.csv("Soccer2019C.csv") 
+
+dataset_soccer <- na.omit(dataset_soccer)
+
+# Get the two columns of interest
+data_2cols_soccer <- dataset_soccer[, c("Finishing", "HeadingAccuracy")]
+```
+
+```{r}
+ggplot(dataset_soccer, aes(Finishing, HeadingAccuracy, color = ID)) +
+    geom_point(alpha = 0.25) +
+    xlab("Income") +
+    ylab("Spending Score")
+```
+
+```{r}
+n_clust <- n_clusters(data_2cols_soccer[1:1000,],
+  package = c("easystats", "NbClust", "mclust"),
+  standardize = FALSE
+)
+n_clust
+```
+
+```{r}
+plot(n_clust)
+```
+
+```{r}
+km.out_soccer <- kmeans(data_2cols_soccer, centers = 3, nstart = 20)
+km.out_soccer
+```
+
+```{r}
+dataset_soccer$ID <- factor(km.out_soccer$cluster)
+ggplot(dataset_soccer, aes(Finishing, HeadingAccuracy, color = ID)) +
+    geom_point(alpha = 0.25) +
+    xlab("Finishing") +
+    ylab("Heading Accuracy")
+```
