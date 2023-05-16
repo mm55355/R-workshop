@@ -289,6 +289,7 @@ print(R2.test)
 ```
 
 ## 2.6 Your turn!
+
 Here follow some exercises for you to do!
 
 ***Exercise 1.***
@@ -809,6 +810,166 @@ Create a scatter plot with the number of clusters
 # your code here…
 ```
 
+# 5. Recommendations
+
+In this exercise, we will create a user-based collaborative filtering recommendation system using a movie dataset.
+
+## 5.1 Install and Load Required Libraries
+
+```{r}
+
+#install.packages("recommenderlab")
+#install.packages("caret")
+
+# Load the recommenderlab library for recommender systems
+library(recommenderlab)
+
+# Load the caret library for data splitting
+library(caret)
+
+```
+
+## 5.2 Load Ratings Data
+
+```{r}
+# Load the ratings data from the CSV file
+ratings <- read.csv("ratings.csv")
+
+# see ratings table
+head(ratings)
+
+```
+
+```{r}
+# Load the movie data from the CSV file
+movies <- read.csv("movies.csv")
+# see movies table
+head(movies)
+```
+
+## 5.3 Convert Ratings Data to a realRatingMatrix
+
+In this step, we convert the ratings data to a **`realRatingMatrix`** using the **`as`** function. This step transforms the ratings data into a format suitable for building the recommendation model
+
+```{r}
+# Convert ratings data to realRatingMatrix
+ratingMatrix <- as(ratings, "realRatingMatrix")
+
+```
+
+## 5.4 Split Data into Training and Testing Sets
+
+Splits the **`ratingMatrix`** data into `training` and `testing` sets based on users. The training set contains 80% of the users selected randomly, and the testing set contains the remaining users.
+
+```{r}
+# Split data into training and testing sets
+set.seed(123)  # Set seed for reproducibility
+
+# User-based split
+user_ids <- colnames(ratingMatrix)
+train_users <- sample(user_ids, 0.8 * length(user_ids))  # Select 80% of users randomly
+
+
+# Create the training and testing data based on the selected users
+train <- ratingMatrix[, train_users]
+test <- ratingMatrix[, !(user_ids %in% train_users)]
+```
+
+## 5.5 Build the Recommendation Model
+
+In this step, we build the recommendation model using the **`Recommender`** function from the **`recommenderlab`** library. We use the "UBCF" method for user-based collaborative filtering.
+
+```{r}
+# Build the recommendation model
+rec <- Recommender(train, method = "UBCF")
+
+```
+
+## 5.6 Generate Recommendations
+
+Here, we generate recommendations for a specific user (in this case, user 100) by using the **`predict`** function on the recommendation model. We specify **`n = 5`** to get the top 5 recommendations. The recommended movie IDs are stored in the **`recommended_movie_ids`** variable.
+
+```{r}
+# Generate recommendations for user 100
+user_id <- 100
+user_data <- train[user_id, ]
+recommendations <- predict(rec, newdata = user_data, n = 5)
+recommended_movie_ids <- as(recommendations, "list")
+
+```
+
+## 5.7 Retrieve Movie Details for Recommended Movies
+
+In this step, we retrieve the movie details for the recommended movie IDs from the **`movies`** dataset. We filter the **`movies`** dataset based on the recommended movie IDs and select the "title", "rating", and "num_ratings" columns. The resulting dataframe is stored in the **`recommended_movies`** variable.
+
+```{r}
+# Retrieve movie titles for recommended movie IDs
+recommended_movie_indices <- match(recommended_movie_ids[[1]], movies$movieId)
+recommended_movie_titles <- movies$title[recommended_movie_indices]
+
+# Calculate the number of ratings for each recommended movie from all users
+recommended_movie_num_ratings <- as.data.frame(table(ratings$movieId)[as.character(recommended_movie_ids[[1]])])
+colnames(recommended_movie_num_ratings) <- c("Movie", "Num_Ratings")
+
+# Calculate the average rating for each recommended movie
+recommended_movie_avg_ratings <- aggregate(rating ~ movieId, data = ratings[ratings$movieId %in% recommended_movie_ids[[1]], ], FUN = mean)$rating
+
+#data frame with the recommended movies and their details
+recommended_movies_df <- data.frame(
+  Movie = recommended_movie_titles,
+  Avg_Rating = recommended_movie_avg_ratings,
+  Num_Ratings = recommended_movie_num_ratings$Num_Ratings
+)
+
+print(recommended_movies_df)
+
+```
+
+## 5.8 Show the results of Recommended Movies
+
+```{r}
+# Filter the recommended movies based on the chosen threshold
+threshold <- 20
+filtered_movies <- recommended_movies_df[recommended_movies_df$Num_Ratings >= threshold, ]
+print(filtered_movies)
+```
+
+The recommended movie of user 100 will be the **`Full Metal Jacket (1987)`**.
+
+**Recommendations exercise:**
+
+Write a Function to Get Top Movie Recommendations for a User
+
+-   Objective: Create a function that takes a user ID as input and returns the top movie recommendations for that user.
+
+```{r}
+# Write a Function to Get Top Movie Recommendations for a User
+get_recommendations <- function(user_id) {
+  
+    #step 1:
+            # A. Extract User Data from a training dataset:
+
+            # B. Generate Recommendations:
+
+            # C. Convert Recommendations to a List:
+
+  #step 2:  Retrieve movie titles for recommended movie IDs
+  #Step 3:  Calculate the number of ratings for each recommended movie from all                users
+  #step 4:  Calculate the average rating for each recommended movie
+  #step 5:  Create a data frame with the recommended movies and their details
+  
+  
+}
+```
+
+```{r}
+
+# Test the function with your chosen user
+user_id <- 50
+recommended_movies <- get_recommendations(user_id)
+print(recommended_movies)
+```
+
 # 6. Answers to the exercises
 
 This section contains the answers to all of the exercises which were given during the workshop. If you did not get to finish the exercises or would like to know what the possible answers could be, feel free to refer to this section.
@@ -883,50 +1044,55 @@ ftable(mycombined)
 ## 6.2 Solution to the regression exercises
 
 ***Exercise 1.***
+
 ```{r}
 soccer_linear_regression_DF <- read.csv("Soccer2019C.csv", header=TRUE, sep=",")
 head(soccer_linear_regression_DF, 5)
 ```
 
 ***Exercise 2.***
+
 ```{r}
 soccer_linear_regression_DF = soccer_linear_regression_DF[, c('Age', 'Overall')]
 head(soccer_linear_regression_DF, 5)
 ```
 
 ***Exercise 3.***
+
 ```{r}
 any(is.na(soccer_linear_regression_DF))
 ```
 
-***Exercise 4.***
-Installing:
+***Exercise 4.*** Installing:
+
 ```{r}
 install.packages("caret")
 install.packages("caTools")
 ```
 
 Loading:
+
 ```{r}
 library(caret)
 library(caTools)
 ```
 
 ***Exercise 5.***
+
 ```{r}
 set.seed(100)
 ```
 
-***Exercise 6.***
-Spliting the dataframe
+***Exercise 6.*** Spliting the dataframe
+
 ```{r}
 split_soccer_linear_DF <- sample.split(Y=soccer_linear_regression_DF$Overall, SplitRatio=0.7)
 soccer_train_set <- subset(x=soccer_linear_regression_DF, split_soccer_linear_DF==TRUE)
 soccer_test_set <- subset(x=soccer_linear_regression_DF, split_soccer_linear_DF==FALSE)
 ```
 
-***Exercise 7.***
-Creating the model
+***Exercise 7.*** Creating the model
+
 ```{r}
 linear_regression_soccer_model <- train(Overall ~ Age, data = soccer_train_set,
                                  method = "lm",
@@ -936,25 +1102,28 @@ linear_regression_soccer_model <- train(Overall ~ Age, data = soccer_train_set,
 )
 ```
 
-***Exercise 8.***
-Train and test the model.
+***Exercise 8.*** Train and test the model.
+
 ```{r}
 linear_regression_soccer_model.training <- predict(linear_regression_soccer_model, soccer_train_set)
 linear_regression_soccer_model.testing <- predict(linear_regression_soccer_model, soccer_test_set)
 ```
 
 ***Exercise 9.***
+
 ```{r}
 plot(soccer_train_set$Overall, linear_regression_soccer_model.training, col="blue")
 plot(soccer_test_set$Overall, linear_regression_soccer_model.testing, col="red")
 ```
 
 ***Exercise 10.***
+
 ```{r}
 summary(linear_regression_soccer_model)
 ```
 
 ***Exercise 11.***
+
 ```{r}
 R.training <- cor(soccer_train_set$Overall, linear_regression_soccer_model.training)
 R.test <- cor(soccer_test_set$Overall, linear_regression_soccer_model.testing)
@@ -1081,4 +1250,40 @@ ggplot(dataset_soccer, aes(Finishing, HeadingAccuracy, color = ID)) +
     geom_point(alpha = 0.25) +
     xlab("Finishing") +
     ylab("Heading Accuracy")
+```
+
+## 6.5 Solution to the Recommendations exercises
+
+```{r}
+# Write a Function to Get Top Movie Recommendations for a User
+get_recommendations_answer <- function(user_id) {
+  
+  #step 1:
+          # A. Extract User Data from a training dataset:
+user_data <- train[user_id, ]
+          # B. Generate Recommendations:
+recommendations <- predict(rec, newdata = user_data, n = 5)
+          # C. Convert Recommendations to a List:
+recommended_movie_ids <- as(recommendations, "list")
+
+  #step 2:  Retrieve movie titles for recommended movie IDs
+recommended_movie_indices <- match(recommended_movie_ids[[1]], movies$movieId)
+recommended_movie_titles <- movies$title[recommended_movie_indices]
+
+  #Step 3:  Calculate the number of ratings for each recommended movie from all                users.
+recommended_movie_num_ratings <- as.data.frame(table(ratings$movieId)[as.character(recommended_movie_ids[[1]])])
+colnames(recommended_movie_num_ratings) <- c("Movie", "Num_Ratings")
+
+  #step 4:  Calculate the average rating for each recommended movie
+recommended_movie_avg_ratings <- aggregate(rating ~ movieId, data = ratings[ratings$movieId %in% recommended_movie_ids[[1]], ], FUN = mean)$rating
+
+  #step 5:  Create a data frame with the recommended movies and their details
+recommended_movies_df <- data.frame(
+  Movie = recommended_movie_titles,
+  Avg_Rating = recommended_movie_avg_ratings,
+  Num_Ratings = recommended_movie_num_ratings$Num_Ratings
+)
+  
+  
+}
 ```
