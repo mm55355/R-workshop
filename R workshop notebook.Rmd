@@ -9,11 +9,11 @@ output:
 
 This notebook is made for students to be able to get more familiar with R, especially when it comes to the common data mining techniques that were previously performed using Python. The exercises within this notebook are in order of the presentation, so feel free to skip to any particular exercise which you want to test out.
 
-## Classification
+# 3. Classification
 
 In this part we will cover how you can perform basic classification in R. For this demonstration, we are going to use the UFC2019.csv file as our data-set. And diabetes.csv data-set for the individual exercise where you can put your knowledge to the test.
 
-### Data visualization
+## 3.1 Data visualization
 
 For data visualization, R provides similar features which were discussed during the DMS course with Python. Those features are plots, bar chart, pie charts, etc. The most basic way to visualize our data, however, is by looking at the first couple of rows and the available columns in the designated data-set. Let's start off by reading out the UFC2019.csv file and displaying the first five rows.
 
@@ -35,7 +35,7 @@ classification_DF = selection_DF[, c('R_age', 'B_age', 'Winner')]
 head(classification_DF, 5)
 ```
 
-### Data cleaning
+## 3.2 Data cleaning
 
 In order to provide the most accurate results and to avoid any complication with the classifiers, we should clean our data as much as possible. The first thing we can do is check whether our data contains any missing values, such as NaN.
 
@@ -80,7 +80,7 @@ Now lets import our packages.
 library(caret)
 ```
 
-### Data splitting
+## 3.3 Data splitting
 
 Now that we have more or less cleaned our data, lets split the data. For this, we should define our independent X and our dependent y variables. To achieve this, we can select which columns we want to assign to the variables either by appointing a **range** (classification_DF[, 1:2]) or the **name** (classification_DF\$name_of_column)of the columns. If we want to pick specific columns that cannot be picked from a range, we can use the **[, c(X1, X3, X5 y)]** way of concatenating columns. However, since we properly split up the data-frame, we should only need to use the first two columns as X and the last as y, which we can do the following way:
 
@@ -101,7 +101,7 @@ X_test <- X[-train_index, ]
 y_test <- y[-train_index]
 ```
 
-### Classification model
+## 3.4 Classification models
 
 There are various libraries that contains various classification models that we can use on our data-set. For simplicity, we are going to use methods and classifier algorithms provided within the **'caret'** library.
 
@@ -133,7 +133,7 @@ model <- train(x = X_train, y = y_train, method = "knn")
 predictions <- predict(model, newdata = X_test)
 ```
 
-### Performance assessment
+## 3.5 Performance assessment
 
 There are several ways to assess the quality of a classification model. The most common is displaying the accuracy of a set of predictions by comparing them with the corresponding true labels **(actual vs predicted) -\> (y_test vs predictions)**
 
@@ -159,7 +159,7 @@ contingency_table <- table(predictions, y_test)
 confusionMatrix(contingency_table)
 ```
 
-### Exercise
+## 3.6 Exercises
 
 Now that you have a rough idea on how you can perform basic classification, it is your turn! In the cell below you have a list of instructions which you have to follow to perform the exercise. Feel free to use more cells, you will probably need them.
 
@@ -181,74 +181,9 @@ Now that you have a rough idea on how you can perform basic classification, it i
 # Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned earlier)
 ```
 
-### Answers to the classification exercise
+# 4. Clustering
 
-```{r}
-# Import the Soccer2019C.csv file and display the first 5 rows
-diabetes_DF <- read.csv("diabetes.csv", header=TRUE, sep=",")
-head(diabetes_DF, 5)
-```
-
-```{r}
-# Check if the data-set contains any missing values and if so, remove them.
-any(is.na(diabetes_DF))
-```
-
-```{r}
-# Put everything except the 'Outcome' as the X variable and 'Outcome' as the y variable. Tip: the first 8 columns are for the X and 9th is for the y. We are going to try to predict the 'Outcome' based on every other column in the CSV.
-
-X <- diabetes_DF[, 1:8]
-y <- diabetes_DF$Outcome
-```
-
-```{r}
-# Split the data into train and test sets with a 70% train and 30% test ratio
-train_index <- createDataPartition(y, p = 0.7, list = FALSE)
-X_train <- X[train_index, ]
-y_train <- y[train_index]
-X_test <- X[-train_index, ]
-y_test <- y[-train_index]
-```
-
-```{r}
-# Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned earlier)
-model <- train(x = X_train, y = y_train, method = "naive_bayes")
-predictions <- predict(model, newdata = X_test)
-```
-
-```{r}
-# Show the performance of the model using a confusion matrix
-contingency_table <- table(predictions, y_test)
-confusionMatrix(contingency_table)
-```
-
-```{r}
-# Createa a function which takes in the X, y and the name of the model as parameters. Make sure that the data is split into train and test inside the function. Lastly, make sure that the function returns the confusion matrix representing the performance of the model.
-perform_classification <- function(X, y, model_name) {
-  train_index <- createDataPartition(y, p = 0.8, list = FALSE)
-  X_train <- X[train_index, ]
-  y_train <- y[train_index]
-  X_test <- X[-train_index, ]
-  y_test <- y[-train_index]
-  
-  model <- train(x = X_train, y = y_train, method = model_name)
-  predictions <- predict(model, newdata = X_test)
-  contingency_table <- table(predictions, y_test)
-  
-  
-  print(paste("The result of the ", model_name, "model is as followed:"))
-  cat("\n")
-  
-  confusionMatrix(contingency_table)
-}
-```
-
-```{r}
-# Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned earlier)
-perform_classification(X, y, "qda")
-```
-
-# **What is clustering analysis?**
+## **4.1 What is clustering analysis?**
 
 Cluster analysis is a way to group similar things together based on their characteristics, while keeping the different groups as different as possible from each other. The goal is to find patterns in data by grouping similar observations together.
 
@@ -260,7 +195,7 @@ The two main ways to group data into classes are:
 
 K-means is considered supervised because you guide it by telling it how many groups to create. Hierarchical clustering is considered unsupervised because the algorithm determines the number of clusters. There are also many other clustering methods available, in case you want to explore them, they can be found here: <https://easystats.github.io/parameters/articles/clustering.html>
 
-# ***k*****-means clustering**
+## **4.2 K-means clustering**
 
 K-means clustering, also known as the mobile center algorithm, is a method used for classifying data into k clusters based on the closest average. The goal is to assign each observation to the cluster with the closest prototype. We won't delve into the mathematical specifics, but rather focus on how to implement this technique in R.
 
@@ -457,6 +392,8 @@ fviz_cluster(km.out_6, data = data_2cols,
              )
 ```
 
+## 4.3 Exercises
+
 ***Exercise 1a.***
 
 Load the Soccer2019C.csv data and then create a scatter plot of "Finishing" and "HeadingAccuracy"
@@ -490,7 +427,76 @@ Create a scatter plot with the number of clusters
 # your code here…
 ```
 
-***solution***
+# 6. Answers to the exercises
+
+This section contains the answers to all of the exercises which were given during the workshop. If you did not get to finish the exercises or would like to know what the possible answers could be, feel free to refer to this section.
+
+## 6.3 Solution to the classification exercises
+
+```{r}
+# Import the Soccer2019C.csv file and display the first 5 rows 
+diabetes_DF <- read.csv("diabetes.csv", header=TRUE, sep=",") 
+head(diabetes_DF, 5)
+```
+
+```{r}
+# Check if the data-set contains any missing values and if so, remove them. 
+any(is.na(diabetes_DF))
+```
+
+```{r}
+# Put everything except the 'Outcome' as the X variable and 'Outcome' as the y variable. Tip: the first 8 columns are for the X and 9th is for the y. We are going to try to predict the 'Outcome' based on every other column in the CSV.  
+X <- diabetes_DF[, 1:8] 
+y <- diabetes_DF$Outcome
+```
+
+```{r}
+# Split the data into train and test sets with a 70% train and 30% test ratio 
+train_index <- createDataPartition(y, p = 0.7, list = FALSE) 
+X_train <- X[train_index, ] 
+y_train <- y[train_index] 
+X_test <- X[-train_index, ] 
+y_test <- y[-train_index]
+```
+
+```{r}
+# Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned earlier) 
+model <- train(x = X_train, y = y_train, method = "naive_bayes") 
+predictions <- predict(model, newdata = X_test)
+```
+
+```{r}
+# Show the performance of the model using a confusion matrix 
+contingency_table <- table(predictions, y_test) 
+confusionMatrix(contingency_table)
+```
+
+```{r}
+# Createa a function which takes in the X, y and the name of the model as parameters. Make sure that the data is split into train and test inside the function. Lastly, make sure that the function returns the confusion matrix representing the performance of the model. 
+perform_classification <- function(X, y, model_name) {   
+  train_index <- createDataPartition(y, p = 0.8, list = FALSE)   
+  X_train <- X[train_index, ]   
+  y_train <- y[train_index]   
+  X_test <- X[-train_index, ]   
+  y_test <- y[-train_index]
+  
+  model <- train(x = X_train, y = y_train, method = model_name)   
+  predictions <- predict(model, newdata = X_test)   
+  contingency_table <- table(predictions, y_test)
+  
+  print(paste("The result of the ", model_name, "model is as followed:"))   
+  cat("\n")
+  
+  confusionMatrix(contingency_table) 
+}
+```
+
+```{r}
+# Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned earlier)
+perform_classification(X, y, "qda")
+```
+
+## 6.4 Solution to the clustering exercises
 
 ```{r}
 dataset_soccer <- read.csv("Soccer2019C.csv") 
