@@ -288,9 +288,78 @@ print("R2 test")
 print(R2.test)
 ```
 
-# 2.6 Your turn!
-
+## 2.6 Your turn!
 Here follow some exercises for you to do!
+
+***Exercise 1.***
+
+```{r}
+# Load the Soccer2019C.csv dataset and show the first 5 rows.
+```
+
+***Exercise 2.***
+
+```{r}
+# We'll be using the "Age", and overall columns, so assign those 2 columns to the dataframe.
+```
+
+***Exercise 3.***
+
+```{r}
+# Check for Na values, and remove any if they are there.
+```
+
+***Exercise 4.***
+
+```{r}
+# Install the caret and caTools packages.
+```
+
+```{r}
+# Import the caret and caTools packages.
+```
+
+***Exercise 5.***
+
+```{r}
+# Set the seed to 100
+```
+
+***Exercise 6.***
+
+```{r}
+# Split the dataframe.
+```
+
+***Exercise 7.***
+
+```{r}
+# Create your model.
+```
+
+***Exercise 8.***
+
+```{r}
+# Train and test your model.
+```
+
+***Exercise 9.***
+
+```{r}
+# Plot a graph for both your training and testing data.
+```
+
+***Exercise 10.***
+
+```{r}
+# Print a summary of the model.
+```
+
+***Exercise 11.***
+
+```{r}
+# Calculate the correlation coefficient, and print the R's and R2's of training and testing respectively.
+```
 
 # 3. Classification
 
@@ -809,6 +878,101 @@ table(agedf$age, agedf$mar1)
 ```{r}
 mycombined <- mydf[mydf$mar1 == 'MARRIED', ]
 ftable(mycombined)
+```
+
+## 6.2 Solution to the regression exercises
+
+***Exercise 1.***
+```{r}
+soccer_linear_regression_DF <- read.csv("Soccer2019C.csv", header=TRUE, sep=",")
+head(soccer_linear_regression_DF, 5)
+```
+
+***Exercise 2.***
+```{r}
+soccer_linear_regression_DF = soccer_linear_regression_DF[, c('Age', 'Overall')]
+head(soccer_linear_regression_DF, 5)
+```
+
+***Exercise 3.***
+```{r}
+any(is.na(soccer_linear_regression_DF))
+```
+
+***Exercise 4.***
+Installing:
+```{r}
+install.packages("caret")
+install.packages("caTools")
+```
+
+Loading:
+```{r}
+library(caret)
+library(caTools)
+```
+
+***Exercise 5.***
+```{r}
+set.seed(100)
+```
+
+***Exercise 6.***
+Spliting the dataframe
+```{r}
+split_soccer_linear_DF <- sample.split(Y=soccer_linear_regression_DF$Overall, SplitRatio=0.7)
+soccer_train_set <- subset(x=soccer_linear_regression_DF, split_soccer_linear_DF==TRUE)
+soccer_test_set <- subset(x=soccer_linear_regression_DF, split_soccer_linear_DF==FALSE)
+```
+
+***Exercise 7.***
+Creating the model
+```{r}
+linear_regression_soccer_model <- train(Overall ~ Age, data = soccer_train_set,
+                                 method = "lm",
+                                 na.action = na.omit,
+                                 preProcess=c("scale","center"),
+                                 trControl= trainControl(method="none")
+)
+```
+
+***Exercise 8.***
+Train and test the model.
+```{r}
+linear_regression_soccer_model.training <- predict(linear_regression_soccer_model, soccer_train_set)
+linear_regression_soccer_model.testing <- predict(linear_regression_soccer_model, soccer_test_set)
+```
+
+***Exercise 9.***
+```{r}
+plot(soccer_train_set$Overall, linear_regression_soccer_model.training, col="blue")
+plot(soccer_test_set$Overall, linear_regression_soccer_model.testing, col="red")
+```
+
+***Exercise 10.***
+```{r}
+summary(linear_regression_soccer_model)
+```
+
+***Exercise 11.***
+```{r}
+R.training <- cor(soccer_train_set$Overall, linear_regression_soccer_model.training)
+R.test <- cor(soccer_test_set$Overall, linear_regression_soccer_model.testing)
+
+R2.training <- R.training^2
+R2.test <- R.test^2
+
+print("R train")
+print(R.training)
+
+print("R2 train")
+print(R2.training)
+
+print("R test")
+print(R.test)
+
+print("R2 test")
+print(R2.test)
 ```
 
 ## 6.3 Solution to the classification exercises
