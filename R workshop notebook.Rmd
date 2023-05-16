@@ -51,7 +51,7 @@ seldf <- na.omit(seldf)
 To see how many records have been removed, we can compare the amount of total records of our original dataframe with the cleaned dataframe by using the *nrow()* function*.*
 
 ```{r}
-df_count = nrow(st)
+df_count = nrow(statistic_df)
 seldf_count = nrow(seldf)
 
 print(paste0('The amount of rows in the df variable is ', df_count, ' and for the seldf variable it is ', seldf_count, '. This means we have removed ', (df_count - seldf_count), ' records' ))
@@ -138,7 +138,7 @@ Those are still a lot of records.... Let's see if we can decrease the size by on
 # filter the data where the age columns is between 25 and 35
 ```
 
-Now that we've signigicantly reduced our sample size, let's see if we can split the data into male and female. You can still keep it in one table for now.
+Now that we've significantly reduced our sample size, let's see if we can split the data into male and female. You can still keep it in one table for now.
 
 ```{r}
 # create a table showing the overview
@@ -743,6 +743,73 @@ Create a scatter plot with the number of clusters
 # 6. Answers to the exercises
 
 This section contains the answers to all of the exercises which were given during the workshop. If you did not get to finish the exercises or would like to know what the possible answers could be, feel free to refer to this section.
+
+## 6.1 Solution to the statistics exercises
+
+*create a variable based on statistic_df and show the first rows*
+
+```{r}
+mydf <- select(statistic_df, c('sex', 'age', 'mar1'))
+head(mydf)
+```
+
+*show the data with either an empty string or NA values*
+
+```{r}
+which(mydf == "" | is.na(mydf))
+```
+
+*omit empty strings or NA values, then print the results.*
+
+```{r}
+mydf[mydf == ""] <- NA
+mydf <- na.omit(mydf)
+
+df_count = nrow(statistic_df)
+mydf_count = nrow(mydf)
+
+print(paste0('The amount of rows in the df variable is ', df_count, ' and for the seldf variable it is ', mydf_count, '. This means we have removed ', (df_count - mydf_count), ' records' ))
+```
+
+*show the data in a table.*
+
+```{r}
+table(mydf$age, mydf$mar1)
+```
+
+*filter the data where the age columns is between 25 and 35*
+
+```{r}
+agedf <- mydf[mydf$age > 25 & mydf$age < 36, ]
+table(agedf$age, agedf$mar1)
+```
+
+*create a table showing the overview*
+
+```{r}
+ftable(agedf)
+```
+
+*select female records, then show the values in percentages*
+
+```{r}
+agedf <- agedf[agedf$sex == 'FEMALE', ]
+prop.table(table(agedf$age, agedf$mar1))*100
+```
+
+*select male records, then show the values in absolute numbers.*
+
+```{r}
+agedf <- agedf[agedf$sex == 'MALE', ]
+table(agedf$age, agedf$mar1)
+```
+
+*create a table containing both male and female records.*
+
+```{r}
+mycombined <- mydf[mydf$mar1 == 'MARRIED', ]
+ftable(mycombined)
+```
 
 ## 6.3 Solution to the classification exercises
 
