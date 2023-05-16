@@ -27,8 +27,7 @@ To make sure the data has been loaded in correctly, we can use the head function
 head(statistic_df)
 ```
 
-As you can see, we got our data loaded in, but there are quite a lot of columns. Luckily for us, we can just select the columns we want to work with, and we can even store that in a new variable! let's give this variable an easy to recognize name.\
-After that, we can once again see the results by using the head function.
+As you can see, we got our data loaded in, but there are quite a lot of columns. Luckily for us, we can just select the columns we want to work with, and we can even store that in a new variable! let's give this variable an easy to recognize name. After that, we can once again see the results by using the head function.
 
 ```{r}
 seldf <- select(statistic_df, c('life', 'mar1', 'sex'))
@@ -57,8 +56,7 @@ seldf_count = nrow(seldf)
 print(paste0('The amount of rows in the df variable is ', df_count, ' and for the seldf variable it is ', seldf_count, '. This means we have removed ', (df_count - seldf_count), ' records' ))
 ```
 
-Now that we have removed any missing values, it's time to get to work with our cleaned dataset.\
-Let's find out whether a certain lifestyle has any influence on the marital status of a person.\
+Now that we have removed any missing values, it's time to get to work with our cleaned dataset. Let's find out whether a certain lifestyle has any influence on the marital status of a person.\
 There is a handy function to create a table with the columns we want to show, so let's use that. We can select the columns from a specific dataframe with the \$ sign as show below:
 
 ```{r}
@@ -105,7 +103,7 @@ And get it in percentages:
 prop.table(ftable(combined_df))*100
 ```
 
-## 1.2 Time to get to work
+## 1.2 Statistics exercises
 
 Now it's time to work on the exercises.\
 First, let's create a new variable based on the *statistic_df* variable, containing the sex, age and marital status, and show the first couple of rows.
@@ -288,7 +286,7 @@ print("R2 test")
 print(R2.test)
 ```
 
-## 2.6 Your turn!
+## 2.6 Regression exercises
 
 Here follow some exercises for you to do!
 
@@ -364,24 +362,24 @@ Here follow some exercises for you to do!
 
 # 3. Classification
 
-In this part we will cover how you can perform basic classification in R. For this demonstration, we are going to use the UFC2019.csv file as our data-set. And diabetes.csv data-set for the individual exercise where you can put your knowledge to the test.
+In this part we will cover how you can perform basic classification in R. For this demonstration, we are going to use the **`UFC2019.csv`** file as our data-set. And **`diabetes.csv`** data-set for the individual exercise where you can put your knowledge to the test.
 
 ## 3.1 Data visualization
 
 For data visualization, R provides similar features which were discussed during the DMS course with Python. Those features are plots, bar chart, pie charts, etc. The most basic way to visualize our data, however, is by looking at the first couple of rows and the available columns in the designated data-set. Let's start off by reading out the UFC2019.csv file and displaying the first five rows.
 
-To achieve the following result, we can use the **read.csv()** function and assign it to a variable which will construct a data frame based on the given file, which in our case is a CSV. The parameters of the function are self-explanatory (path of the file, whether to include the header and the separation sign of the data-set file). To display the first few rows of the data-frame, we can use the **head()** method for which we can pass our data-frame and the number of rows we want to be displayed.
+To achieve the following result, we can use the **`read.csv()`** function and assign it to a variable which will construct a data frame based on the given file, which in our case is a CSV. The parameters of the function are self-explanatory (path of the file, whether to include the header and the separation sign of the data-set file). To display the first few rows of the data-frame, we can use the **`head()`** method for which we can pass our data-frame and the number of rows we want to be displayed.
 
 ```{r}
 selection_DF <- read.csv("UFC2019.csv", header=TRUE, sep=",")
 head(selection_DF, 5)
 ```
 
-This data-set consists of 145 unique columns and 5144 unique rows. In order to perform classification on this data-set we should choose at least two independent **X** variables to predict the dependent **y** variable.
+This data-set consists of 145 unique columns and 5144 unique rows. In order to perform classification on this data-set we should choose at least two independent **`X`** variables to predict the dependent **`y`** variable.
 
-To keep it simple, lets choose the **age** of Red and Blue fighters in order to predict the **winner** of the match. To achieve this, lets first take all of the variables that we want to use (both X and y) into a separate data-frame to make it easier for us.
+To keep it simple, lets choose the **`age`** of Red and Blue fighters in order to predict the **`winner`** of the match. To achieve this, lets first take all of the variables that we want to use (both X and y) into a separate data-frame to make it easier for us.
 
-To assign these three columns to a new data-frame, we can use the **[, c(X1, X2, y)]** extension which simply concatenates the columns along with their values to the new data-frame.
+To assign these three columns to a new data-frame, we can use the **`[, c(X1, X2, y)]`** extension which simply concatenates the columns along with their values to the new data-frame.
 
 ```{r}
 classification_DF = selection_DF[, c('R_age', 'B_age', 'Winner')]
@@ -392,14 +390,14 @@ head(classification_DF, 5)
 
 In order to provide the most accurate results and to avoid any complication with the classifiers, we should clean our data as much as possible. The first thing we can do is check whether our data contains any missing values, such as NaN.
 
-We can use the **any** method in combination with the boolean expression method **is.na()** to simply determine whether our data-set contains missing values. Another alternative is to use the **sum()** in combination with **is.na()** to determine how many missing values we have
+We can use the **`any()`** method in combination with the boolean expression method **`is.na()`** to simply determine whether our data-set contains missing values. Another alternative is to use the **`sum()`** in combination with **`is.na()`** to determine how many missing values we have
 
 ```{r}
 any(is.na(classification_DF))
 sum(is.na(classification_DF))
 ```
 
-Now that we know that our data-set contains some missing values, let's make sure to get rid of these values to avoid any possible complication with our classifiers. To do this, we can use the **na.omit()** , pass our data-set and assign this to our original data frame variable.
+Now that we know that our data-set contains some missing values, let's make sure to get rid of these values to avoid any possible complication with our classifiers. To do this, we can use the **`na.omit()`** , pass our data-set and assign this to our original data frame variable.
 
 ```{r}
 classification_DF <- na.omit(classification_DF)
@@ -419,7 +417,7 @@ classification_DF <- subset(classification_DF, Winner != 'Draw')
 sum(classification_DF$Winner == 'Draw')
 ```
 
-We can not install and import the package that we will need for data partitioning and classification model(s). This package is known as **'caret'**. The caret package offers a unified framework for a wide range of machine learning tasks, including classification, regression, and feature selection. It provides a consistent API for multiple algorithms and facilitates data preprocessing, model tuning, and performance evaluation.
+We can not install and import the package that we will need for data partitioning and classification model(s). This package is known as **`caret`**. The caret package offers a unified framework for a wide range of machine learning tasks, including classification, regression, and feature selection. It provides a consistent API for multiple algorithms and facilitates data pre-processing, model tuning, and performance evaluation.
 
 Firstly, lets install the required package.
 
@@ -433,16 +431,16 @@ Now lets import our packages.
 library(caret)
 ```
 
-## 3.3 Data splitting
+## 3.3 Data partitioning
 
-Now that we have more or less cleaned our data, lets split the data. For this, we should define our independent X and our dependent y variables. To achieve this, we can select which columns we want to assign to the variables either by appointing a range **(classification_DF[, 1:2])** (keep in mind, the range is inclusive, so don't use the index) or the name **(classification_DF\$name_of_column)** of the columns. If we want to pick specific columns that cannot be picked from a range, we can use the **[, c(X1, X3, X5 y)]** way of concatenating columns. However, since we properly split up the data-frame, we should only need to use the first two columns as X and the last as y, which we can do the following way:
+Now that we have more or less cleaned our data, lets split the data. For this, we should define our independent X and our dependent y variables. To achieve this, we can select which columns we want to assign to the variables either by appointing a range **`classification_DF[, 1:2]`** (keep in mind, the range is inclusive, so don't use the index) or the name **`classification_DF$name_of_column`** of the columns. If we want to pick specific columns that cannot be picked from a range, we can use the **`[, c(X1, X3, X5 y)]`** way of concatenating columns. However, since we properly split up the data-frame, we should only need to use the first two columns as X and the last as y, which we can do the following way:
 
 ```{r}
 X <- classification_DF[, 1:2]
 y <- classification_DF$Winner
 ```
 
-Now, let's split our data into train and test sets. To do this, we can use the Hold-Out method which was frequently used in the Data mining and Statistics course. There are several ways of doing it, however, one of the most easiest one to use is the **createDataPartition()** function from the **'caret'** library.
+Now, let's split our data into train and test sets. To do this, we can use the Hold-Out method which was frequently used in the Data mining and Statistics course. There are several ways of doing it, however, one of the most easiest one to use is the **`createDataPartition()`** function from the **'caret'** library.
 
 The first parameters indicates the output variable that we are trying to predict. The second parameter indicates what our train and testing split is, in our case, it's 80% train and 20% split. The last parameter indicates that we want to get a vector of indices back, rather than a list of our partitioned data since its easier to work with vectors. This approach will ensure that the data is randomly divided into training and testing sets, allowing us to train our model on one set and evaluate its performance on the other.
 
@@ -456,31 +454,33 @@ y_test <- y[-train_index]
 
 ## 3.4 Classification models
 
-There are various libraries that contains various classification models that we can use on our data-set. For simplicity, we are going to use methods and classifier algorithms provided within the **'caret'** library.
+There are various libraries that contains various classification models that we can use on our data-set. For simplicity, we are going to use methods and classifier algorithms provided within the **`caret`** library.
 
-**Caret** provides us with many different classification algorithms, some of which are:
+**`Caret`** provides us with many different classification algorithms, some of which are:
 
-1.  Naive Bayes ('naive_bayes')
+1.  Naive Bayes (**`'naive_bayes'`**)
 
-2.  K-Nearest Neighbors ('knn')
+2.  K-Nearest Neighbors (**`'knn'`**)
 
-3.  Support Vector Machines ('svmLinear', 'svmRadial')
+3.  Support Vector Machines (**`'svmLinear'`**, **`'svmRadial'`**)
 
-4.  Random Forest ('rf')
+4.  Random Forest (**`'rf'`**)
 
-5.  Logistic Regression ('glm')
+5.  Logistic Regression (**`'glm'`**)
 
-6.  Quadratic Discriminant Analysis ('qda')
+6.  Quadratic Discriminant Analysis (`'qda'`)
 
-7.  Linear Discriminant Analysis ('lda')
+7.  Linear Discriminant Analysis (**`'lda'`**)
 
-8.  Adaptive Boosting ('adaboost')
+8.  Adaptive Boosting (**`'adaboost'`**)
 
-Lets try to build our model based on the KNN classifier
+Lets try to build our model based on the **`KNN classifier`**
 
 ```{r}
 model <- train(x = X_train, y = y_train, method = "knn")
 ```
+
+Now lets get our prediction based on our classifier. This is also know as the `y_pred`.
 
 ```{r}
 predictions <- predict(model, newdata = X_test)
@@ -936,7 +936,7 @@ print(filtered_movies)
 
 The recommended movie of user 100 will be the **`Full Metal Jacket (1987)`**.
 
-**Recommendations exercise:**
+## 5.9 Recommendation exercises
 
 Write a Function to Get Top Movie Recommendations for a User
 
@@ -1252,7 +1252,7 @@ ggplot(dataset_soccer, aes(Finishing, HeadingAccuracy, color = ID)) +
     ylab("Heading Accuracy")
 ```
 
-## 6.5 Solution to the Recommendations exercises
+## 6.5 Solution to the recommendation exercises
 
 ```{r}
 # Write a Function to Get Top Movie Recommendations for a User
