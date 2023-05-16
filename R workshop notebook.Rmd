@@ -24,14 +24,14 @@ statistic_df <- read.csv('GSS2012.csv')
 To make sure the data has been loaded in correctly, we can use the head function to show the first couple of entries.
 
 ```{r}
-head(statistic_df)
+head(statistic_df, 10)
 ```
 
 As you can see, we got our data loaded in, but there are quite a lot of columns. Luckily for us, we can just select the columns we want to work with, and we can even store that in a new variable! let's give this variable an easy to recognize name. After that, we can once again see the results by using the head function.
 
 ```{r}
 sel_df <- statistic_df[, c("life", "mar1", 'sex')]
-head(statistic_df)
+head(statistic_df, 10)
 ```
 
 As you can see, we now just have the three columns left. But even in these first few records we can already see some missing values. We can see which rows have empty values using the following line:
@@ -979,8 +979,8 @@ This section contains the answers to all of the exercises which were given durin
 *create a variable based on statistic_df and show the first rows*
 
 ```{r}
-sel_df <- statistic_df[, c("sex", "age", 'mar1')]
-head(mydf)
+mydf <- statistic_df[, c("sex", "age", 'mar1')]
+head(mydf, 10)
 ```
 
 *show the data with either an empty string or NA values*
