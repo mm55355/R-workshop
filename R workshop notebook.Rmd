@@ -9,6 +9,120 @@ output:
 
 This notebook is made for students to be able to get more familiar with R, especially when it comes to the common data mining techniques that were previously performed using Python. The exercises within this notebook are in order of the presentation, so feel free to skip to any particular exercise which you want to test out.
 
+# 2. Regression
+
+In the regression part we will be covering linear regression. Below follows an example as to how you'd perform Single linear regression using the diabetes dataset.
+
+
+## 2.1 Data preparation
+First, we put the dataset in a variable using the read.csv command.
+```{r}
+diab_DF <- read.csv("diabetes.csv", header=TRUE, sep=",")
+head(diab_DF, 10)
+```
+For this example, we'll be using the glucose levels of a person to estimate their BMI. So let's only select these columns from our dataframe.
+```{r}
+diab_DF = diab_DF[, c('Glucose', 'BMI')]
+head(diab_DF, 10)
+```
+
+Following this we'll be checking for any Na values in our data by using the any to see if there are any, and then sum to see how many there are in total.
+```{r}
+any(is.na(diab_DF))
+sum(is.na(diab_DF))
+```
+Now, as we can see from the head, there is the potential of there being a value of 0. Let's first see how many of those there are in our dataframe.
+```{r}
+sum(diab_DF$Glucose == '0'| diab_DF$BMI == '0')
+```
+This is not desired, so we should remove these from our dataframe. We can do this by simply  taking a subset of our data, where we disregard any value of 0 like so.
+
+```{r}
+diab_DF <- subset(diab_DF, Glucose != '0')
+diab_DF <- subset(diab_DF, BMI != '0')
+sum(diab_DF$Glucose == '0'| diab_DF$BMI == '0')
+head(diab_DF, 10)
+```
+All 0 values have now been removed from our dataframe. Let's get to regressing.
+
+## 2.2 Installing and loading packages
+
+Before anything, we'll be needing the caret and caTools libraries, so let's install them first. RTools may ask you to restart R prior to installation. This is highly recommended and you can click yes.
+```{r}
+install.packages("caret")
+install.packages("caTools")
+```
+
+Now that that is done we can import them.
+```{r}
+library(caret)
+library(caTools)
+```
+
+## 2.3 Train, test, split!
+
+Now that that is loaded we can move on to the next step. Since we want reproducability, we'll be setting our seed. (I am setting it to 100.)
+```{r}
+set.seed(100)
+```
+
+
+After this we will be splitting our data into training and testing data by using the createDataPartition function from the caret library.
+```{r}
+split_DF <- sample.split(Y=diab_DF$BMI, SplitRatio=0.7)
+trainSet <- subset(x=diab_DF, split_DF==TRUE)
+testSet <- subset(x=diab_DF, split_DF==FALSE)
+```
+
+## 2.4 Linear regression model training and fitting
+
+The next step is to train our model using the lm method and train function from the caret package.
+```{r}
+linear_regression_model <- train(BMI ~ Glucose, data = trainSet,
+                                 method = "lm",
+                                 na.action = na.omit,
+                                 preProcess=c("scale","center"),
+                                 trControl= trainControl(method="none")
+)
+```
+
+On to training and testing our model.
+```{r}
+linear_regression_model.training <- predict(linear_regression_model, trainSet)
+linear_regression_model.testing <- predict(linear_regression_model, testSet)
+```
+
+## 2.5 Results of our hard labour.
+
+Now that we have trained and tested our model, let's see what it looks like.
+```{r}
+plot(trainSet$BMI, linear_regression_model.training, col="blue")
+plot(testSet$BMI, linear_regression_model.testing, col="red")
+```
+
+Voila, we have a visual representation of our model. How about some extra statistics.
+```{r}
+summary(linear_regression_model)
+
+R.training <- cor(trainSet$BMI, linear_regression_model.training)
+R.test <- cor(testSet$BMI, linear_regression_model.testing)
+
+R2.training <- R.training^2
+R2.test <- R.test^2
+
+print("R train")
+print(R.training)
+print("R2 train")
+print(R2.training)
+print("R test")
+print(R.test)
+print("R2 test")
+print(R2.test)
+```
+# 2.6 Your turn!
+
+Here follow some exercises for you to do!
+
 # 3. Classification
 
 In this part we will cover how you can perform basic classification in R. For this demonstration, we are going to use the UFC2019.csv file as our data-set. And diabetes.csv data-set for the individual exercise where you can put your knowledge to the test.
