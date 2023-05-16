@@ -165,20 +165,34 @@ Now that you have a rough idea on how you can perform basic classification, it i
 
 ```{r}
 # Import the diabetes.csv file and display the first 5 rows
+```
 
+```{r}
 # Check if the data-set contains any missing values and if so, remove them.
+```
 
+```{r}
 # Put everything except the 'Outcome' as the X variable and 'Outcome' as the y variable. Tip: the first 8 columns are for the X and 9th is for the y. We are going to try to predict the 'Outcome' based on every other column in the CSV.
+```
 
+```{r}
 # Split the data into train and test sets with a 70% train and 30% test ratio
+```
 
-# Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned earlier)
+```{r}
+# Initialize the model using the Naive Bayes algorithm and feed the data to it (refer to the list of algorithms mentioned in 3.4)
+```
 
+```{r}
 # Show the performance of the model using a confusion matrix
+```
 
+```{r}
 # Create a a function which takes in the X, y and the name of the model as parameters. Make sure that the data is split into train and test inside the function. Lastly, make sure that the function returns the confusion matrix representing the performance of the model.
+```
 
-# Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned earlier)
+```{r}
+# Call the previously created function using the Quadratic Discriminant Analysis as your algorithm name (refer to the list of algorithms mentioned in 3.4)
 ```
 
 # 4. Clustering
